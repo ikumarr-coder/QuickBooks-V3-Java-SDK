@@ -31,6 +31,7 @@ import java.util.Set;
 
 import javax.net.ssl.SSLContext;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -343,6 +344,8 @@ public class HTTPClientConnectionInterceptor implements Interceptor {
 	 */
 	private void setResponseElements(IntuitMessage intuitMessage, HttpResponse httpResponse) throws FMSException {
 		ResponseElements responseElements = intuitMessage.getResponseElements();
+		Header intuitTidHeader = httpResponse.getLastHeader(RequestElements.HEADER_INTUIT_TID);
+		responseElements.setIntuitTid(intuitTidHeader != null ? intuitTidHeader.getValue() : null);
 		if(httpResponse.getLastHeader(RequestElements.HEADER_PARAM_CONTENT_ENCODING) != null)
 		{
 		responseElements.setEncodingHeader(httpResponse.getLastHeader(RequestElements.HEADER_PARAM_CONTENT_ENCODING).getValue());

@@ -86,7 +86,9 @@ public class DeserializeInterceptor implements Interceptor {
 						LOG.info("Invalid Content Type" + serializeFormat);
 						LOG.debug("Decompressed Data" + responseElements.getDecompressedData());
 						LOG.error("Decompressed Data" + responseElements.getDecompressedData());
-						throw new FMSException(responseElements.getDecompressedData());
+						FMSException invalidContentType = new FMSException(responseElements.getDecompressedData());
+						responseElements.copyIntuitTidTo(invalidContentType);
+						throw invalidContentType;
 						
 					}
 				}

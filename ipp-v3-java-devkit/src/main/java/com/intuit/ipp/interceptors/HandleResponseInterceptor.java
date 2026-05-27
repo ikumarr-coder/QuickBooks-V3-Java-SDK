@@ -105,22 +105,22 @@ public class HandleResponseInterceptor implements Interceptor {
 			Fault fault = intuitResponse.getFault();
 
 			if ("Validation".equalsIgnoreCase(fault.getType())) {
-				throw new ValidationException(fault.getError());
+				throw withIntuitTid(new ValidationException(fault.getError()), responseElements);
 			} else if ("Service".equalsIgnoreCase(fault.getType())) {
-				throw new ServiceException(fault.getError());
+				throw withIntuitTid(new ServiceException(fault.getError()), responseElements);
 			} else if ("AuthenticationFault".equalsIgnoreCase(fault.getType())) {
-				throw new AuthenticationException(fault.getError());
+				throw withIntuitTid(new AuthenticationException(fault.getError()), responseElements);
 			} else if ("Authentication".equalsIgnoreCase(fault.getType())) {
-				throw new AuthenticationException(fault.getError());
+				throw withIntuitTid(new AuthenticationException(fault.getError()), responseElements);
 			} else if ("ApplicationAuthenticationFailed".equalsIgnoreCase(fault.getType())) {
-				throw new AuthenticationException(fault.getError());
+				throw withIntuitTid(new AuthenticationException(fault.getError()), responseElements);
 			} else if ("Authorization".equalsIgnoreCase(fault.getType())) {
-				throw new AuthorizationException(fault.getError());
+				throw withIntuitTid(new AuthorizationException(fault.getError()), responseElements);
 			} else if ("AuthorizationFault".equalsIgnoreCase(fault.getType())) {
-				throw new AuthorizationException(fault.getError());
+				throw withIntuitTid(new AuthorizationException(fault.getError()), responseElements);
 			} else {
 				//not able to recognize the type of exception
-				throw new FMSException(fault.getError());
+				throw withIntuitTid(new FMSException(fault.getError()), responseElements);
 			}
 		} else if (intuitResponse == null) {
 			//intuitResponse is null means that message received contains error as message 
@@ -134,24 +134,29 @@ public class HandleResponseInterceptor implements Interceptor {
 				responseMessage = Integer.toString(status); 
 			}
 			if (status == HTTP_ERROR_400) {
-				throw new BadRequestException(responseMessage);
+				throw withIntuitTid(new BadRequestException(responseMessage), responseElements);
 			} else if (status == HTTP_ERROR_401) {
-				throw new InvalidTokenException(responseMessage);
+				throw withIntuitTid(new InvalidTokenException(responseMessage), responseElements);
 			} else if (status == HTTP_ERROR_403) {
-				throw new InvalidRequestException(responseMessage);
+				throw withIntuitTid(new InvalidRequestException(responseMessage), responseElements);
 			} else if (status == HTTP_ERROR_404) {
-				throw new InvalidRequestException(responseMessage);
+				throw withIntuitTid(new InvalidRequestException(responseMessage), responseElements);
 			} else if (status == HTTP_ERROR_500) {
-				throw new InternalServiceException(responseMessage);
+				throw withIntuitTid(new InternalServiceException(responseMessage), responseElements);
 			} else if (status == HTTP_ERROR_503) {
-				throw new ServiceUnavailableException(responseMessage);
+				throw withIntuitTid(new ServiceUnavailableException(responseMessage), responseElements);
             } else if (status == HTTP_ERROR_429) {
-                throw new ServiceException(responseMessage);
+                throw withIntuitTid(new ServiceException(responseMessage), responseElements);
             }
             //TODO Do we need to support error code 504 -- gateway timeout?
 		}
 		
 		LOG.debug("Exit HandleResponseInterceptor.");
+	}
+
+	private static FMSException withIntuitTid(FMSException exception, ResponseElements responseElements) {
+		responseElements.copyIntuitTidTo(exception);
+		return exception;
 	}
 
 }

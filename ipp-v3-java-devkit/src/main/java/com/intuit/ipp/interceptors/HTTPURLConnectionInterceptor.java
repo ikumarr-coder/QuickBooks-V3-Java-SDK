@@ -184,6 +184,7 @@ public class HTTPURLConnectionInterceptor implements Interceptor {
 	private void setResponseElements(IntuitMessage intuitMessage, HttpURLConnection httpUrlConnection) throws FMSException {
 		LOG.debug("Response headers:"+httpUrlConnection.getHeaderFields());
 		ResponseElements responseElements = intuitMessage.getResponseElements();
+		responseElements.setIntuitTid(httpUrlConnection.getHeaderField(RequestElements.HEADER_INTUIT_TID));
 		responseElements.setEncodingHeader(httpUrlConnection.getContentEncoding());
 		responseElements.setContentTypeHeader(httpUrlConnection.getContentType());		
 		try {

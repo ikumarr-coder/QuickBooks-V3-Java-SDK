@@ -20,6 +20,7 @@ import java.io.InputStream;
 import org.apache.http.StatusLine;
 
 import com.intuit.ipp.core.Response;
+import com.intuit.ipp.exception.FMSException;
 import com.intuit.ipp.services.CallbackMessage;
 
 /**
@@ -71,6 +72,11 @@ public class ResponseElements {
      * contains bytes of the received content
      */
     private InputStream responseBytes;
+
+	/**
+	 * intuit_tid from the HTTP response header (server transaction id)
+	 */
+	private String intuitTid;
 	
 	/**
 	 * Gets decompressed data 
@@ -218,5 +224,22 @@ public class ResponseElements {
 	}
 
     public void setResponseBytes(InputStream responseBytes) {this.responseBytes = responseBytes;}
+
+	public String getIntuitTid() {
+		return intuitTid;
+	}
+
+	public void setIntuitTid(String intuitTid) {
+		this.intuitTid = intuitTid;
+	}
+
+	/**
+	 * Copies the response {@code intuit_tid} onto an exception before it is thrown.
+	 */
+	public void copyIntuitTidTo(FMSException exception) {
+		if (intuitTid != null && exception != null) {
+			exception.setIntuit_tid(intuitTid);
+		}
+	}
 	
 }
